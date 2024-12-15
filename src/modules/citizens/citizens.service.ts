@@ -22,6 +22,7 @@ export class CitizensService {
 		  }
 		  	Citizen.current_refresh_token = refreshToken;  
 			await this.CitizensRepository.update(_id, { current_refresh_token: refreshToken }); 
+			
 		  	console.log(`Refresh token for user ${_id} has been updated.`);
 		} catch (error) {
 		  console.error(`Failed to set refresh token for user ${_id}:`, error);

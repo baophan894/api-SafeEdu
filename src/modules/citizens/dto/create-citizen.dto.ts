@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsStrongPassword, MaxLength } from "class-validator";
 
 export class CreateCitizenDto {
-       @IsNotEmpty()
+        @IsNotEmpty()
         @MaxLength(50)
         first_name: string;
     

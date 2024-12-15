@@ -33,7 +33,7 @@ export class Citizen extends BaseEntity {
     first_name?: string;
     last_name?: string;
     avatar?: string;
-    phone?: string;
+    phone_number?: string;
     gender?: GENDER;
   }) {
     super();
@@ -41,7 +41,7 @@ export class Citizen extends BaseEntity {
     this.first_name = citizen?.first_name;
     this.last_name = citizen?.last_name;
     this.avatar = citizen?.avatar;
-    this.phone = citizen?.phone;
+    this.phone_number = citizen?.phone_number;
     this.gender = citizen?.gender;
   }
 
@@ -78,12 +78,16 @@ export class Citizen extends BaseEntity {
     required: true,
     match: /^[0-9]{10}$/,
   })
-  phone: string;
+  phone_number: string;
 
   @Prop({
       enum: GENDER,
   })
   gender: GENDER;
+
+  @Prop()
+	@Exclude()
+	current_refresh_token?: string;
 
   @Prop({
       type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserAchievement' }],
