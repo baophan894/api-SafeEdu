@@ -1,9 +1,9 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCitizenDto } from './dto/create-Citizen.dto';
-import { UpdateCitizenDto } from './dto/update-Citizen.dto';
+import { CreateCitizenDto } from './dto/create-citizen.dto';
+import { UpdateCitizenDto } from './dto/update-citizen.dto';
 import { OrganizationsService } from '@modules/organizations/organizations.service';
 import { FilterQuery } from 'mongoose';
-import { Citizen } from './entities/Citizen.entity';
+import { Citizen } from './entities/citizen.entity';
 import { CitizensRepositoryInterface } from './interfaces/citizens.interfaces';
 
 @Injectable()
