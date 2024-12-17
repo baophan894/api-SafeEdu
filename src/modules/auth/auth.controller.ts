@@ -1,8 +1,9 @@
+
 import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local.guard';
 import { JwtRefreshTokenGuard } from './guards/jwt-refresh-token.guard';
-import { SignUpDto } from './dto/sign-up.dto';
+import { SignUpDto, SignUpGoogleDto } from './dto/sign-up.dto';
 import {
 	ApiBadRequestResponse,
 	ApiBody,
@@ -103,5 +104,12 @@ export class AuthController {
 	@ApiOperation({ summary: 'verify-otp'})
 	async verifiedOTP(@Body() verified_otp: VerifiedOTPDto) {
 		return await this.auth_service.verifyOTP(verified_otp.otp);
+	}
+
+	
+
+	@Get()
+	sendMail(): void{
+		return this.auth_service.sendMail();
 	}
 }

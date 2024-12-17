@@ -11,6 +11,7 @@ import {
 	Injectable,
 	UnauthorizedException,
 } from '@nestjs/common';
+import nodemailer from "nodemailer";
 import { StudentsService } from '@modules/students/students.service';
 
 // INNER
@@ -29,7 +30,8 @@ import { SignUpWithCitizenDto } from './dto/sign-up-with-citizen.dto';
 import { RolesEnum } from 'src/enums/roles..enum';
 import { CitizensService } from '@modules/citizens/citizens.service';
 import { Citizen } from '@modules/citizens/entities/citizen.entity';
-
+import {  HttpServer } from '@nestjs/common';
+import {MailerService} from '@nestjs-modules/mailer';
 @Injectable()
 export class AuthService {
 	private SALT_ROUND = 11;
@@ -39,7 +41,29 @@ export class AuthService {
 		private readonly student_service: StudentsService,
 		private readonly citizen_service: CitizensService,
 		private readonly jwt_service: JwtService,
+		private readonly mailer_service: MailerService,
 	) {}
+
+	async authInWithGoogle(sign_up_dto: SignUpGoogleDto) {
+		console.log('auth');
+		
+		try {
+			let admin = await this.admin_service.findOneByCondition({
+				email: sign_up_dto.email,
+			});
+			// kiem tra neu admin da co duoc dang ky trong db
+			if (admin) {
+			
+				return await this.signInAdmin(admin._id.toString());
+			}
+			// 🔎 Từ bước này trở xuống sẽ tương tự với method signUp đã có
+			// 🟢 Mọi người có thể refactor lại để tránh lặp code nếu muốn
+			
+		} catch (error) {
+			throw error;
+		}
+	}
+
 
 	private async verifyPlainContentWithHashedContent(
 		plain_text: string,
@@ -117,11 +141,33 @@ export class AuthService {
 		}
 	}
 
+	async signInAdmin(_id:string){
+		const admin =await this.admin_service.findOneByCondition({ _id })
+		if(admin)
+			{
+				console.log("hello" + admin)
+				const access_token = this.generateAccessToken({
+					userId: admin._id.toString(),
+					role: 'Admin',
+				});
+				const refresh_token = this.generateRefreshToken({
+					userId: admin._id.toString(),
+					role: 'admin',
+				});
+				
+				return {
+					access_token,
+					refresh_token,
+				};
+			} 
+	}
+
 	async signIn(_id: string) {
 		try {
 			const [student, citizen] = await Promise.all([
 				await this.student_service.findOneByCondition({ _id }),
-				await this.citizen_service.findOneByCondition({ _id })
+				await this.citizen_service.findOneByCondition({ _id }),
+				
 			]);
 
 			if (student) {
@@ -140,6 +186,8 @@ export class AuthService {
 					refresh_token,
 				};
 			} 
+
+			
 
 			if (citizen) {
 				const access_token = this.generateAccessToken({
@@ -306,5 +354,15 @@ export class AuthService {
 				HttpStatus.BAD_REQUEST, 
 			);
 		}
+	}
+
+	sendMail(): void{
+		this.mailer_service.sendMail({
+			to: 'monkeyold113@gmail.com' ,
+			from: 'baopqtde181053@fpt.edu.vn',
+			subject: 'Verify email',
+			text: 'hello',
+			html: '<b>Welcome to Safe Edu</b>'
+		})
 	}
 }
